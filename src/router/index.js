@@ -45,6 +45,12 @@ export default new Router({
                     meta: {title: '订单管理'}
                 },
                 {
+
+                    path: '/payRecord',
+                    component: resolve => require(['../components/page/PayRecord.vue'], resolve),
+                    meta: {title: '流水管理'}
+                },
+                {
                     path: '/tabs',
                     component: resolve => require(['../components/page/Tabs.vue'], resolve),
                     meta: {title: 'tab选项卡'}

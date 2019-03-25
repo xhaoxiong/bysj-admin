@@ -7,40 +7,30 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <!--<el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>-->
-                <el-select v-model="select_cate" placeholder="筛选状态" class="handle-select mr10">
-                    <el-option key="1" label="已审核" value="1"></el-option>
-                    <el-option key="2" label="待审核" value="2"></el-option>
+                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
+                <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
+                    <el-option key="1" label="广东省" value="广东省"></el-option>
+                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
                 </el-select>
-                <el-input v-model="PageResult.search" placeholder="筛选关键词(酒店名称，用户昵称)"
-                          class="handle-input mr10"></el-input>
+                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable"
                       @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="HotelName" label="酒店名称" sortable width="150">
+                <el-table-column prop="CreatedAt" label="日期" sortable width="180" :formatter="formatCreatedAt">
                 </el-table-column>
-                <el-table-column prop="User.NickName" label="用户昵称" width="120">
+                <el-table-column prop="UserName" label="姓名" width="120">
                 </el-table-column>
-                <el-table-column prop="Content" label="评论" width="180" show-overflow-tooltip>
+                <el-table-column prop="Amount" label="消费金额(元)"  width="150" :formatter="formatAmount">
                 </el-table-column>
-                <el-table-column prop="Status" label="评论状态" width="75" :formatter="formatStatus">
+                <el-table-column prop="Content" label="操作内容">
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="handleReview(scope.$index, scope.row)">
-                            {{scope.row.Status === 1 ? '撤销审核' : '通过审核'}}
-                        </el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red"
-                                   @click="handleDelete(scope.$index, scope.row)">删除
-                        </el-button>
-                    </template>
-                </el-table-column>
+
             </el-table>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next"
-                               :total="this.total">
+                               :total="PageResult.total">
                 </el-pagination>
             </div>
         </div>
@@ -88,25 +78,31 @@
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
+                select_word: '',
                 del_list: [],
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
-                idx: -1,
-                form: {},
-                total: 0,
                 PageResult: {
                     code: null,
-                    hotel_id: '',
                     page: 0,
                     message: '',
                     status: 0,
                     per: 10,
                     total: 0,
-                    user_id: 0,
                     data: null,
                     search: '',
-                }
+                    user_id: 0,
+                    created_at: '',
+                    end_at: ''
+
+                },
+                form: {
+                    name: '',
+                    date: '',
+                    address: ''
+                },
+                idx: -1
             }
         },
         created() {
@@ -134,30 +130,20 @@
             }
         },
         methods: {
-            formatStatus(row, column, cellValue) {
-                if (cellValue === 1) {
-                    return "已审核"
-                } else if (cellValue === 2) {
-                    return "待审核"
-                }
+
+            formatAmount(row, column, cellValue) {
+                let a = cellValue / 10000
+                return a
             },
-            handleReview(index, row) {
-                if (row.Status === 1) {
-                    row.Status = 2
-                } else {
-                    row.Status = 1
-                }
-                let item = {
-                    id: row.ID,
-                    status: row.Status
-                };
-                qs.post("/api/admin/comment/update", item).then(res => {
-                    if (res.code === 10000) {
-                        this.tableData[index].Status = row.Status;
-                    } else if (res.code === 10014) {
-                        this.$router.push('/login');
-                    }
-                })
+            formatCreatedAt(row, column, cellValue) {
+                let date = new Date(Date.parse(cellValue));
+                let Y = date.getFullYear() + '-';
+                let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                let D = date.getDate() + ' ';
+                let h = date.getHours() + ':';
+                let m = date.getMinutes() + ':';
+                let s = date.getSeconds();
+                return Y + M + D + h + m + s //呀麻碟
             },
             // 分页导航
             handleCurrentChange(val) {
@@ -165,19 +151,16 @@
                 this.getData();
             },
             // 获取 easy-mock 的模拟数据
-
+            // 获取 easy-mock 的模拟数据
             getData() {
-                this.PageResult.status = Number(this.select_cate);
-                qs.post("/api/admin/comment/list",
-                    this.PageResult).then((res) => {
+                qs.post("/api/admin/payRecord/list", this.PageResult).then((res) => {
                     if (res.code === 10000) {
                         this.tableData = res.data;
-                        this.total = res.total;
+
                     }
                 })
             },
             search() {
-                this.getData();
                 this.is_search = true;
             },
             formatter(row, column) {

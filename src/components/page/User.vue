@@ -17,7 +17,7 @@
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="ID" label="ID" sortable width="150">
                 </el-table-column>
-                <el-table-column prop="CreatedAt" label="日期" sortable width="150">
+                <el-table-column prop="CreatedAt" label="日期" sortable width="150" :formatter="formatCreatedAt">
                 </el-table-column>
 
                 <el-table-column prop="Avatar" label="头像" sortable width="150">
@@ -144,6 +144,16 @@
             }
         },
         methods: {
+            formatCreatedAt(row, column, cellValue) {
+                let date = new Date(Date.parse(cellValue));
+                let Y = date.getFullYear() + '-';
+                let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                let D = date.getDate() + ' ';
+                let h = date.getHours() + ':';
+                let m = date.getMinutes() + ':';
+                let s = date.getSeconds();
+                return Y + M + D + h + m + s //呀麻碟
+            },
             formatGender(row, column, cellValue) {
                 if (cellValue === 1) {
                     return "男"
@@ -245,6 +255,8 @@
                 qs.post("/api/admin/user/update", data).then((res) => {
                     if (res.code === 10000) {
                         this.$set(this.tableData, this.idx, item);
+                    } else if (res.code === 10014) {
+                        this.$router.push('/login');
                     }
                 })
                 this.editVisible = false;

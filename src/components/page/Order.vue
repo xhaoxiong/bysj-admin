@@ -7,7 +7,7 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
+                <el-button type="primary" icon="delete" class="handle-del mr10" @click="handleDelAll">批量删除</el-button>
                 <el-select v-model="select_cate" placeholder="订单状态" class="handle-select mr10">
                     <el-option key="1" label="待支付" value="1"></el-option>
                     <el-option key="2" label="已支付" value="2"></el-option>
@@ -15,8 +15,9 @@
                     <el-option key="4" label="待评价" value="4"></el-option>
                     <el-option key="5" label="已完结" value="5"></el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-input v-model="PageResult.search" placeholder="筛选关键词(订单号、酒店信息、房屋信息)"
+                          class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="search" @click="getData">搜索</el-button>
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable"
                       @selection-change="handleSelectionChange">
@@ -146,6 +147,14 @@
                 <el-button type="primary" @click="deleteRow">确 定</el-button>
             </span>
         </el-dialog>
+
+        <el-dialog title="提示" :visible.sync="delAllVisible" width="300px" center>
+            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delAllVisible = false">取 消</el-button>
+                <el-button type="primary" @click="delAll">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -160,11 +169,11 @@
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
-                select_word: '',
                 del_list: [],
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
+                delAllVisible: false,
                 roomVisible: false,
                 userVisible: false,
                 form: {
@@ -271,13 +280,15 @@
                 return Y + M + D + h + m + s //呀麻碟
             },
             handleCurrentChange(val) {
-                this.cur_page = val;
+                this.PageResult.page = val;
                 this.getData();
             },
             // 获取 easy-mock 的模拟数据
             getData() {
+                this.PageResult.status = Number(this.select_cate)
                 qs.post("/api/admin/order/list", this.PageResult).then((res) => {
                     if (res.code === 10000) {
+                        this.PageResult = res;
                         this.tableData = res.data;
                         this.parseData();
                     }
@@ -336,15 +347,27 @@
                 this.idx = index;
                 this.delVisible = true;
             },
+            handleDelAll() {
+                this.delAllVisible = true
+            },
             delAll() {
                 const length = this.multipleSelection.length;
+                let ids = new Array();
                 let str = '';
                 this.del_list = this.del_list.concat(this.multipleSelection);
+                console.log(this.del_list[0])
                 for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
+                    ids.push(this.multipleSelection[i].ID)
                 }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
+
+                qs.post("/api/admin/order/delete", {ids: ids}).then(res => {
+                    if (res.code === 10000) {
+                        this.delAllVisible = false;
+                        this.$message.error('删除了' + str);
+                        this.multipleSelection = [];
+                    }
+                })
+
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
@@ -362,6 +385,8 @@
                         this.tableData[this.idx].OutDate = this.form.Outdate;
                         console.log(res);
                         this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+                    } else if (res.code === 10014) {
+                        this.$router.push('/login');
                     }
                 })
 
@@ -369,8 +394,19 @@
             // 确定删除
             deleteRow() {
                 this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
+
+                let ids = new Array();
+
+                ids.push(this.idx);
+                qs.post("/api/admin/order/delete", {ids: ids}).then(res => {
+                    if (res.code === 10000) {
+                        this.$message.success('删除成功');
+                        this.delVisible = false;
+                    } else if (res.code === 10014) {
+                        this.$router.push('/login');
+                    }
+                })
+
             }
         }
     }

@@ -51,13 +51,12 @@
                     alert('内容填写不完整');
                     return
                 }
-                console.log(this.ruleForm);
                 qs.post("/api/admin/auth/login", this.ruleForm).then(res => {
                     if (res.code === 10000) {
                         localStorage.setItem('ms_username', this.ruleForm.username);
                         localStorage.setItem('token', res.token);
                         this.$router.push('/');
-                        console.log(res)
+
                     }
 
                 })

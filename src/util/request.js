@@ -1,4 +1,5 @@
 import axios from 'axios'
+import route from '../router/index'
 
 const service = axios.create({
     baseURL: "http://127.0.0.1:9018", // api 的 base_url
@@ -22,12 +23,20 @@ service.interceptors.request.use(
         Promise.reject(error)
     }
 )
+
 service.interceptors.response.use(
     response => {
         const res = response.data
+        if (res.code === 10014) {
+            route.push("/login")
+            return res
+        }
         return res
     }
 )
+
+export default service
+
 // service.interceptors.response.use(
 //   /**
 //    * 下面的注释为通过在response里，自定义code来标示请求状态
@@ -53,4 +62,3 @@ service.interceptors.response.use(
 //     return Promise.reject(error)
 //   }
 // )
-export default service
