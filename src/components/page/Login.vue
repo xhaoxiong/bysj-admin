@@ -53,6 +53,8 @@
                 }
                 qs.post("/api/admin/auth/login", this.ruleForm).then(res => {
                     if (res.code === 10000) {
+                        console.log(res)
+                        localStorage.setItem("userinfo", JSON.stringify(res.userinfo));
                         localStorage.setItem('ms_username', this.ruleForm.username);
                         localStorage.setItem('token', res.token);
                         this.$router.push('/');
