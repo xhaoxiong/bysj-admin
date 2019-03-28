@@ -51,6 +51,11 @@ export default new Router({
                     meta: {title: '流水管理'}
                 },
                 {
+                    path: '/feedBack',
+                    component: resolve => require(['../components/page/FeedBack.vue'], resolve),
+                    meta: {title: '用户反馈'}
+                },
+                {
                     path: '/tabs',
                     component: resolve => require(['../components/page/Tabs.vue'], resolve),
                     meta: {title: 'tab选项卡'}

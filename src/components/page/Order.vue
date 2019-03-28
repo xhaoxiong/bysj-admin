@@ -256,16 +256,12 @@
             },
             formatStatus(row, column, cellValue) {
                 switch (cellValue) {
-                    case 1:
-                        return "待支付";
                     case 2:
-                        return "已支付";
+                        return "待支付";
                     case 3:
-                        return "已取消";
+                        return "已支付";
                     case 4:
-                        return "已评价";
-                    case 5:
-                        return "已完结";
+                        return "已取消";
                 }
             },
 

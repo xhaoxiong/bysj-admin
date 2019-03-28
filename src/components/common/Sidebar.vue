@@ -140,9 +140,14 @@
                             {
                                 index: 'order',
                                 title: '订单管理'
-                            }, {
+                            },
+                            {
                                 index: 'payRecord',
                                 title: '流水管理'
+                            },
+                            {
+                                index: 'feedBack',
+                                title: '用户反馈'
                             }
                         ]
                     },

@@ -12,58 +12,24 @@
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable"
                       @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="CreatedAt" label="日期" sortable width="180" :formatter="formatCreatedAt">
+                <el-table-column prop="CreatedAt" label="反馈时间" sortable width="180" :formatter="formatCreatedAt">
                 </el-table-column>
-                <el-table-column prop="UserName" label="姓名" width="120">
+                <el-table-column prop="User.Mobile" label="用户手机号"  width="120">
                 </el-table-column>
-                <el-table-column prop="Amount" label="消费金额(元)"  width="150" :formatter="formatAmount">
+                <el-table-column prop="Content" label="反馈内容" width="180" show-overflow-tooltip>
                 </el-table-column>
-                <el-table-column prop="Content" label="操作内容">
-                </el-table-column>
-
             </el-table>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next"
-                               :total="PageResult.total">
+                               :total="PageFeedBackResult.total">
                 </el-pagination>
             </div>
         </div>
-
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd"
-                                    style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
-    import qs from "../../util/request"
+    import qs from '../../util/request'
 
     export default {
         name: 'basetable',
@@ -78,19 +44,14 @@
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
-                PageResult: {
+                PageFeedBackResult: {
                     code: null,
                     page: 0,
                     message: '',
-                    status: 0,
                     per: 10,
                     total: 0,
-                    data: null,
                     search: '',
-                    user_id: 0,
-                    created_at: '',
-                    end_at: ''
-
+                    data: null
                 },
                 form: {
                     name: '',
@@ -125,10 +86,10 @@
             }
         },
         methods: {
-
-            formatAmount(row, column, cellValue) {
-                let a = cellValue / 10000
-                return a
+            // 分页导航
+            handleCurrentChange(val) {
+                this.PageResult.page = val;
+                this.getData();
             },
             formatCreatedAt(row, column, cellValue) {
                 let date = new Date(Date.parse(cellValue));
@@ -140,18 +101,14 @@
                 let s = date.getSeconds();
                 return Y + M + D + h + m + s //呀麻碟
             },
-            // 分页导航
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            // 获取 easy-mock 的模拟数据
             // 获取 easy-mock 的模拟数据
             getData() {
-                qs.post("/api/admin/payRecord/list", this.PageResult).then((res) => {
+
+                qs.post("/api/admin/feedback/list", this.PageFeedBackResult).then((res) => {
+                    console.log(res)
                     if (res.code === 10000) {
                         this.tableData = res.data;
-
+                        console.log("res:", this.tableData)
                     }
                 })
             },
