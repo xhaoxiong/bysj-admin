@@ -14,7 +14,9 @@
                       @selection-change="handleSelectionChange">
                 <el-table-column prop="CreatedAt" label="反馈时间" sortable width="180" :formatter="formatCreatedAt">
                 </el-table-column>
-                <el-table-column prop="User.Mobile" label="用户手机号"  width="120">
+                <el-table-column prop="User.Mobile" label="用户手机号" width="120">
+                </el-table-column>
+                <el-table-column prop="User.NickName" label="用户昵称" width="120">
                 </el-table-column>
                 <el-table-column prop="Content" label="反馈内容" width="180" show-overflow-tooltip>
                 </el-table-column>
