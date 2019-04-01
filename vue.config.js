@@ -9,5 +9,8 @@ module.exports = {
                 }
             }
         }
-    }
+    },
+    assetsDir:'assets',
+    outputDir:'dist',
+    baseUrl:'/',
 }
