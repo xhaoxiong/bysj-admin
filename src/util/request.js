@@ -2,7 +2,7 @@ import axios from 'axios'
 import route from '../router/index'
 
 const service = axios.create({
-    baseURL: "http://123.207.1.120:9018", // api 的 base_url
+    baseURL: "http://127.0.0.1:9018", // api 的 base_url
     timeout: 500000 // request timeout
 })
 service.interceptors.request.use(
