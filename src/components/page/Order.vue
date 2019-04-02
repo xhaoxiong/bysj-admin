@@ -12,7 +12,6 @@
                     <el-option key="1" label="待支付" value="1"></el-option>
                     <el-option key="2" label="已支付" value="2"></el-option>
                     <el-option key="3" label="已取消" value="3"></el-option>
-                    <el-option key="4" label="待评价" value="4"></el-option>
                     <el-option key="5" label="已完结" value="5"></el-option>
                 </el-select>
                 <el-input v-model="PageResult.search" placeholder="筛选关键词(订单号、酒店信息、房屋信息)"
@@ -273,7 +272,17 @@
                 let h = date.getHours() + ':';
                 let m = date.getMinutes() + ':';
                 let s = date.getSeconds();
-                return Y + M + D + h + m + s //呀麻碟
+                if (date.getHours() < 10) {
+                    h = '0' + h
+                }
+                if (date.getMinutes() < 10) {
+                    m = '0' + m
+                }
+                if (date.getSeconds() < 10) {
+                    s = '0' +s
+                }
+
+                return Y + M + D + h + m + s
             },
             handleCurrentChange(val) {
                 this.PageResult.page = val;

@@ -152,7 +152,18 @@
                 let h = date.getHours() + ':';
                 let m = date.getMinutes() + ':';
                 let s = date.getSeconds();
-                return Y + M + D + h + m + s //呀麻碟
+
+                if (date.getHours() < 10) {
+                    h = '0' + h
+                }
+                if (date.getMinutes() < 10) {
+                    m = '0' + m
+                }
+                if (date.getSeconds() < 10) {
+                    s = '0' +s
+                }
+
+                return Y + M + D + h + m + s
             },
             formatGender(row, column, cellValue) {
                 if (cellValue === 1) {

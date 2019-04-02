@@ -17,7 +17,7 @@
                 </el-table-column>
                 <el-table-column prop="UserName" label="姓名" width="120">
                 </el-table-column>
-                <el-table-column prop="Amount" label="消费金额(元)"  width="150" :formatter="formatAmount">
+                <el-table-column prop="Amount" label="消费金额(元)" width="150" :formatter="formatAmount">
                 </el-table-column>
                 <el-table-column prop="Content" label="操作内容">
                 </el-table-column>
@@ -138,7 +138,18 @@
                 let h = date.getHours() + ':';
                 let m = date.getMinutes() + ':';
                 let s = date.getSeconds();
-                return Y + M + D + h + m + s //呀麻碟
+
+                if (date.getHours() < 10) {
+                    h = '0' + h
+                }
+                if (date.getMinutes() < 10) {
+                    m = '0' + m
+                }
+                if (date.getSeconds() < 10) {
+                    s = '0' +s
+                }
+
+                return Y + M + D + h + m + s
             },
             // 分页导航
             handleCurrentChange(val) {
