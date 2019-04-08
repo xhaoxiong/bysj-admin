@@ -9,10 +9,8 @@
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="handleDelAll">批量删除</el-button>
                 <el-select v-model="select_cate" placeholder="订单状态" class="handle-select mr10">
-                    <el-option key="1" label="待支付" value="1"></el-option>
-                    <el-option key="2" label="已支付" value="2"></el-option>
-                    <el-option key="3" label="已取消" value="3"></el-option>
-                    <el-option key="5" label="已完结" value="5"></el-option>
+                    <el-option key="2" label="待支付" value="1"></el-option>
+                    <el-option key="3" label="已支付" value="2"></el-option>
                 </el-select>
                 <el-input v-model="PageResult.search" placeholder="筛选关键词(订单号、酒店信息、房屋信息)"
                           class="handle-input mr10"></el-input>
@@ -37,7 +35,7 @@
 
                 <el-table-column prop="Status" label="订单状态" width="120" :formatter="formatStatus">
                 </el-table-column>
-                <el-table-column prop="RealInfo.averagePrice" label="应付金额" width="120" :formatter="formatStatus">
+                <el-table-column prop="RealInfo.averagePrice" label="应付金额" width="120">
                 </el-table-column>
                 <el-table-column prop="User.NickName" label="用户信息" width="120">
                     <template slot-scope="scope">
@@ -279,7 +277,7 @@
                     m = '0' + m
                 }
                 if (date.getSeconds() < 10) {
-                    s = '0' +s
+                    s = '0' + s
                 }
 
                 return Y + M + D + h + m + s
@@ -398,14 +396,12 @@
             },
             // 确定删除
             deleteRow() {
-                this.tableData.splice(this.idx, 1);
-
                 let ids = new Array();
-
-                ids.push(this.idx);
+                ids.push(this.tableData[this.idx].ID);
                 qs.post("/api/admin/order/delete", {ids: ids}).then(res => {
                     if (res.code === 10000) {
                         this.$message.success('删除成功');
+                        this.tableData.splice(this.idx, 1);
                         this.delVisible = false;
                     } else if (res.code === 10014) {
                         this.$router.push('/login');
