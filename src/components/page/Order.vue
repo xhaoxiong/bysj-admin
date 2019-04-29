@@ -9,8 +9,8 @@
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="handleDelAll">批量删除</el-button>
                 <el-select v-model="select_cate" placeholder="订单状态" class="handle-select mr10">
-                    <el-option key="2" label="待支付" value="1"></el-option>
-                    <el-option key="3" label="已支付" value="2"></el-option>
+                    <el-option key="1" label="待支付" value="2"></el-option>
+                    <el-option key="2" label="已支付" value="3"></el-option>
                 </el-select>
                 <el-input v-model="PageResult.search" placeholder="筛选关键词(订单号、酒店信息、房屋信息)"
                           class="handle-input mr10"></el-input>
